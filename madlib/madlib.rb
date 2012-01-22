@@ -40,7 +40,7 @@ say "\n\n\n\n\n\n\n\n\n\n\n\n\n\n##########################################\n###
 questions.length.times {|i| 
   quest = questions[i]
   answers[i] = ask(quest.prompt){|q|
-    q.responses[ :not_valid ] = quest.response
+    q.responses[ :not_valid ] = quest.prompt+"("+quest.response+")"
     #Array indexing works too!
     #q.validate = questions[i][1]; 
     q.validate = quest.validation;
