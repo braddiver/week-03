@@ -11,22 +11,25 @@ def hilite(text)
   return "\e["+blue+"m"+text+"\e[0m"
 end
 
+basicWordVal = /[\D]{2}/#No digits, at least 2 letters
+Quest = Struct.new :prompt, :validation, :response
+
 questions=[
-"Give me a VERB: ",
-"Give me an ADJECTIVE: ",
-"Give me a NOUN (PLURAL): ",
-"Give me an ADJECTIVE: ",
-"Give me a VERB ENDING IN 'ING': ",
-"Give me a VERB: ",
-"Give me a NUMBER: ",
-"Give me an ADJECTIVE: ",
-"Give me an ADJECTIVE: ",
-"Give me a NOUN (PLURAL): ",
-"Give me a NOUN (PLURAL): ",
-"Give me A MALE NAME: ",
-"Give me an ADJECTIVE: ",
-"Give me another ADJECTIVE: ",
-"(Last one!) Give me a NOUN (PLURAL): "]
+(Quest.new "Give me a VERB: ", basicWordVal, "How about a real verb?"),
+(Quest.new "Give me an ADJECTIVE: ", basicWordVal, "How about a real adjective?"),
+(Quest.new "Give me a NOUN (PLURAL): ", basicWordVal, "Please try again"),
+(Quest.new "Give me an ADJECTIVE: ", basicWordVal, "Please try again"),
+(Quest.new "Give me a VERB ENDING IN 'ING': ", /[\w]{2}ing/, "Please try again"),
+(Quest.new "Give me a VERB: ", basicWordVal, "Is that a verb?"),
+(Quest.new "Give me a NUMBER: ", /^\S\d+$/, "Number keys only please"),
+(Quest.new "Give me an ADJECTIVE: ",basicWordVal, "Please try again"),
+(Quest.new "Give me another ADJECTIVE: ",basicWordVal, "Please try again"),
+(Quest.new "Give me a NOUN (PLURAL): ",basicWordVal, "Please try again"),
+(Quest.new "Give me another NOUN (PLURAL): ",basicWordVal, "Please try again"),
+(Quest.new "Give me A MALE NAME: ",/[\w]+/, "Please try again"),
+(Quest.new "Give me an ADJECTIVE: ",basicWordVal, "Please try again"),
+(Quest.new "Give me another ADJECTIVE: ",basicWordVal, "Please try again"),
+(Quest.new "(Last one!) Give me a NOUN (PLURAL): ",basicWordVal, "Please try again")]
 
 answers=[]
 
@@ -35,7 +38,13 @@ say "\n\n\n\n\n\n\n\n\n\n\n\n\n\n##########################################\n###
 
 
 questions.length.times {|i| 
-  answers[i] = ask(questions[i])
+  quest = questions[i]
+  answers[i] = ask(quest.prompt){|q|
+    q.responses[ :not_valid ] = quest.response
+    #Array indexing works too!
+    #q.validate = questions[i][1]; 
+    q.validate = quest.validation;
+  }
 }
  
 
